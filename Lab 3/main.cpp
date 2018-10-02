@@ -17,6 +17,10 @@
 #include "RakNet/RakNetTypes.h"
 #include "RakNet/BitStream.h"
 
+// SDL Includes
+#include "SDL.h"
+#undef main
+
 // Our includes
 #include "Event.h"
 #include "EventQueue.h"
