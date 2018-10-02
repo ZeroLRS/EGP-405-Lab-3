@@ -17,12 +17,12 @@ void GameState::DrawMap()
 {
 	system("cls");
 
-	char map[20][10];
+	char map[10][20];
 
 	// Fill the map with the empty character
-	for (int x = 0; x < 20; x++)
+	for (int x = 0; x < 10; x++)
 	{
-		for (int y = 0; y < 10; y++)
+		for (int y = 0; y < 20; y++)
 		{
 			map[x][y] = '.';
 		}
@@ -33,7 +33,7 @@ void GameState::DrawMap()
 		map[e->getPosition().x][e->getPosition().y] = e->getSymbol();
 	}
 
-	for (int x = 0; x < 20; x++)
+	for (int x = 0; x < 10; x++)
 	{
 		for (int y = 0; y < 20; y++)
 		{

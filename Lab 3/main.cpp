@@ -22,14 +22,35 @@
 #include "EventQueue.h"
 #include "GameState.h"
 
+#include <chrono>
+
+const int FPS = 10;
+const __int64 MS_PER_FRAME = 1000 / FPS;
+
 int main(int const argc, char const *const *const argv)
 {
 	GameState* gs = new GameState();
 
+	auto lastTime = std::chrono::system_clock::now();
+	auto lastTimeMS = std::chrono::time_point_cast<std::chrono::milliseconds>(lastTime);
+
 	while (!gs->exit)
 	{
-		gs->Update();
-		gs->DrawMap();
+
+		auto currentTime = std::chrono::system_clock::now();
+		auto currentTimeMS = std::chrono::time_point_cast<std::chrono::milliseconds>(currentTime);
+
+		auto elapsedChronoTime = currentTimeMS - lastTimeMS;
+
+		__int64 elapsedTime = elapsedChronoTime.count();
+
+		if (elapsedTime > MS_PER_FRAME)
+		{
+			gs->Update();
+			gs->DrawMap();
+
+			lastTimeMS = currentTimeMS;
+		}
 	}
 
 	// exit
