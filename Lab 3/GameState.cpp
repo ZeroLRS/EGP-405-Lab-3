@@ -5,7 +5,6 @@ GameState::GameState()
 	exit = false;
 }
 
-
 GameState::~GameState()
 {
 }
@@ -18,12 +17,12 @@ void GameState::DrawMap()
 {
 	system("cls");
 
-	char map[20][20];
+	char map[20][10];
 
 	// Fill the map with the empty character
 	for (int x = 0; x < 20; x++)
 	{
-		for (int y = 0; y < 20; y++)
+		for (int y = 0; y < 10; y++)
 		{
 			map[x][y] = '.';
 		}
@@ -31,7 +30,7 @@ void GameState::DrawMap()
 
 	for (const Entity* e : entities)
 	{
-		map[e->position.x][e->position.y] = e->symbol;
+		map[e->getPosition().x][e->getPosition().y] = e->getSymbol();
 	}
 
 	for (int x = 0; x < 20; x++)

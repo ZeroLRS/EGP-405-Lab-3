@@ -9,8 +9,8 @@ public:
 	Entity(Vector2 _startPos, char _symbol);
 	~Entity();
 
-	Vector2 getPosition() { return position; };
-	char getSymbol() { return symbol; };
+	Vector2 getPosition() const { return position; };
+	char getSymbol() const { return symbol; };
 
 private:
 	Vector2 position;
