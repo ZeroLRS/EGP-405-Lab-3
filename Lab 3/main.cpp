@@ -20,8 +20,26 @@
 // Our includes
 #include "Event.h"
 #include "EventQueue.h"
+#include "GameState.h"
 
 int main(int const argc, char const *const *const argv)
+{
+	GameState* gs = new GameState();
+
+	while (!gs->exit)
+	{
+		gs->Update();
+		gs->DrawMap();
+	}
+
+	// exit
+	printf("\n\n");
+	system("pause");
+	return 0;
+
+}
+
+void TestQueue()
 {
 	// Testing the queue
 	EventQueue* queue = new EventQueue();
@@ -46,12 +64,5 @@ int main(int const argc, char const *const *const argv)
 		printf("%s", returnEvent->TestString.c_str());
 		delete(returnEvent);
 		returnEvent = queue->pop();
-	}
-	while (returnEvent != nullptr);
-
-	// exit
-	printf("\n\n");
-	system("pause");
-	return 0;
-
+	} while (returnEvent != nullptr);
 }

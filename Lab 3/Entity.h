@@ -12,4 +12,3 @@ public:
 	Vector2 position;
 	char symbol;
 };
-
