@@ -13,6 +13,8 @@ public:
 	Event();
 	~Event();
 
+	std::string TestString;
+
 	EventType type;
 };
 

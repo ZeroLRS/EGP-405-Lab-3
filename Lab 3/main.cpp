@@ -23,13 +23,51 @@
 #include "GameState.h"
 
 #include <chrono>
+#include <thread>
+#include <mutex>
 
-const int FPS = 10;
+const int FPS = 4;
 const __int64 MS_PER_FRAME = 1000 / FPS;
+
+// Test mutex
+std::mutex queueThreadLock;
+
+void addStuffToQueue(EventQueue* queue)
+{
+	for (int i = 0; i < 100; i++)
+	{
+		{
+			std::lock_guard<std::mutex> lock(queueThreadLock);
+
+			Event* testEvent = new Event();
+			testEvent->TestString = "Hello World";
+			queue->push(testEvent);
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+	}
+}
+
+void emptyQueue(EventQueue* queue)
+{
+	std::lock_guard<std::mutex> lock(queueThreadLock);
+
+	Event* currEvent = queue->pop();
+
+	while (currEvent != nullptr)
+	{
+		printf("%s", currEvent->TestString.c_str());
+		delete(currEvent);
+		currEvent = queue->pop();
+	}
+}
 
 int main(int const argc, char const *const *const argv)
 {
 	GameState* gs = new GameState();
+
+	// Thread testing
+	EventQueue* queue = new EventQueue(); // Test queue for multithreading
+	std::thread testThread(addStuffToQueue, queue);
 
 	auto lastTime = std::chrono::system_clock::now();
 	auto lastTimeMS = std::chrono::time_point_cast<std::chrono::milliseconds>(lastTime);
@@ -48,10 +86,14 @@ int main(int const argc, char const *const *const argv)
 		{
 			gs->Update();
 			gs->DrawMap();
+			emptyQueue(queue);
 
 			lastTimeMS = currentTimeMS;
 		}
 	}
+
+	// Make sure thread is done
+	testThread.join();
 
 	// exit
 	printf("\n\n");
