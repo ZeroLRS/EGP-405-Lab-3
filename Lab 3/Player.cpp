@@ -23,3 +23,10 @@ int Player::getNumCoins()
 { 
 	return collectedCoins; 
 };
+
+void Player::move(Vector2 _direction)
+{
+	position.x += _direction.x;
+	position.y += _direction.y;
+}
+

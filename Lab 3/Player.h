@@ -1,6 +1,7 @@
 #pragma once
 #include"Entity.h"
 #include <string>
+#include "Utils.h"
 
 class Player : public Entity
 {
@@ -17,5 +18,6 @@ public:
 
 	void addCoin();
 	int getNumCoins();
+	void move(Vector2 _direction);
 };
 

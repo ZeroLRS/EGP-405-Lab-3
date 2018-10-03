@@ -5,6 +5,7 @@
 #include "EventListener.h"
 
 class InputManager;
+class Player;
 
 class GameState : public EventListener
 {
@@ -22,5 +23,7 @@ public:
 	void handleEvent(const Event& _event) override;
 	void initEvents();
 	void movePlayer(Vector2 _direction);
+
+	Player* getClientPlayer();
 };
 

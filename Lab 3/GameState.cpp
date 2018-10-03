@@ -2,7 +2,7 @@
 #include "InputManager.h"
 #include "EventSystem.h"
 #include "PlayerMoveEvent.h"
-
+#include "Player.h"
 GameState::GameState()
 {
 	exit = false;
@@ -28,7 +28,22 @@ void GameState::initEvents()
 
 void GameState::movePlayer(Vector2 _direction)
 {
+	getClientPlayer()->move(_direction);
+
 	printf("(%i , %i)", _direction.x, _direction.y);
+}
+
+Player* GameState::getClientPlayer()
+{
+	for (auto iter = entities.begin(); iter != entities.end(); ++iter)
+	{
+		if ((*iter)->getType() == CLIENT_PLAYER)
+		{
+			return (Player*)(*iter);
+		}
+	}
+
+	return nullptr;
 }
 
 void GameState::Update()

@@ -21,7 +21,7 @@ public:
 	char getSymbol() const { return symbol; };
 	EntityType getType() const { return type; };
 
-private:
+protected:
 	Vector2 position;
 	char symbol;
 	EntityType type;
