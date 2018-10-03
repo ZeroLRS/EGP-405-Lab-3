@@ -24,7 +24,7 @@ void EventQueue::push(Event* newEvent)
 	newItem->nextItem = nullptr;
 
 	// Connect it to the rest of the queue
-	if (mNewestItem != nullptr)
+	if (mFirstItem != nullptr)
 	{
 		mNewestItem->nextItem = newItem;
 	}
