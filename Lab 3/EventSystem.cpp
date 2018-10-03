@@ -76,9 +76,9 @@ void EventSystem::removeListenerFromAllEvents(EventListener* _pListener)
 	}
 }
 
-void EventSystem::addToEventQueue(Event& _event)
+void EventSystem::addToEventQueue(Event* _event)
 {
-	eventQueue->push(&_event);
+	eventQueue->push(_event);
 }
 
 void EventSystem::dispatchEvents()
@@ -91,18 +91,25 @@ void EventSystem::dispatchEvents()
 
 		dispatchEvent(*currEvent);
 
-		delete currEvent;
+		//delete currEvent;
 	}
 }
 
 void EventSystem::dispatchEvent(const Event& _event)
 {
-	std::pair<std::multimap<EventType, EventListener*>::iterator, std::multimap<EventType, EventListener*>::iterator> ret;
-	ret = mListenerMap.equal_range(_event.type);
+	//std::pair<std::multimap<EventType, EventListener*>::iterator, std::multimap<EventType, EventListener*>::iterator> ret;
+	//ret = mListenerMap.equal_range(_event.type);
 
-	std::multimap<EventType, EventListener*>::iterator iter;
-	for (iter = ret.first; iter != ret.second; ++iter)
+	//std::multimap<EventType, EventListener*>::iterator iter;
+	//for (iter = ret.first; iter != ret.second; ++iter)
+	//{
+	//	iter->second->handleEvent(_event);
+	//}
+
+	for (auto iter = mListenerMap.begin(); iter != mListenerMap.end(); ++iter)
 	{
 		iter->second->handleEvent(_event);
 	}
+
+//	delete(&_event);
 }

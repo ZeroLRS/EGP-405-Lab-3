@@ -7,6 +7,8 @@ GameState::GameState()
 {
 	exit = false;
 	input = new InputManager();
+
+	initEvents();
 }
 
 GameState::~GameState()
@@ -24,10 +26,16 @@ void GameState::initEvents()
 	EventSystem::getInstance()->addListener(this, PLAYER_MOVE);
 }
 
+void GameState::movePlayer(Vector2 _direction)
+{
+	printf("(%i , %i)", _direction.x, _direction.y);
+}
+
 void GameState::Update()
 {
 	//dispatch events from queue
 	EventSystem::getInstance()->dispatchEvents();
+	HandleInput();
 }
 
 void GameState::DrawMap()
@@ -65,28 +73,28 @@ void GameState::HandleInput()
 {
 	input->updateKeyStates();
 
-	if (input->getKeyDown(VK_LEFT))
+	if (input->getKey(VK_LEFT))
 	{
 		//move left
-		PlayerMoveEvent playerMove(Vector2(-1, 0));
+		PlayerMoveEvent* playerMove = new PlayerMoveEvent(Vector2(-1, 0));
 		EventSystem::getInstance()->addToEventQueue(playerMove);
 	}
 	if (input->getKeyDown(VK_UP))
 	{
 		//move up
-		PlayerMoveEvent playerMove(Vector2(0, 1));
+		PlayerMoveEvent* playerMove = new PlayerMoveEvent(Vector2(0, 1));
 		EventSystem::getInstance()->addToEventQueue(playerMove);
 	}
 	if (input->getKeyDown(VK_RIGHT))
 	{
 		//move right
-		PlayerMoveEvent playerMove(Vector2(1, 0));
+		PlayerMoveEvent* playerMove = new PlayerMoveEvent(Vector2(1, 0));
 		EventSystem::getInstance()->addToEventQueue(playerMove);
 	}
 	if (input->getKeyDown(VK_DOWN))
 	{
 		//move down
-		PlayerMoveEvent playerMove(Vector2(0, -1));
+		PlayerMoveEvent* playerMove = new PlayerMoveEvent(Vector2(0, -1));
 		EventSystem::getInstance()->addToEventQueue(playerMove);
 	}
 
@@ -102,7 +110,7 @@ void GameState::handleEvent(const Event & _event)
 	{
 		case PLAYER_MOVE:
 		{
-
+			movePlayer(((const PlayerMoveEvent &)_event).moveDirection);
 			break;
 		}
 		default:

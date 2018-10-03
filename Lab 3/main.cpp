@@ -39,9 +39,9 @@ void addStuffToQueue(EventQueue* queue)
 		{
 			std::lock_guard<std::mutex> lock(queueThreadLock);
 
-			Event* testEvent = new Event();
+			/*Event* testEvent = new Event();
 			testEvent->TestString = "Hello World";
-			queue->push(testEvent);
+			queue->push(testEvent);*/
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(250));
 	}
@@ -105,7 +105,7 @@ int main(int const argc, char const *const *const argv)
 void TestQueue()
 {
 	// Testing the queue
-	EventQueue* queue = new EventQueue();
+	/*EventQueue* queue = new EventQueue();
 
 	Event* ev2 = new Event();
 	Event* ev3 = new Event();
@@ -127,5 +127,5 @@ void TestQueue()
 		printf("%s", returnEvent->TestString.c_str());
 		delete(returnEvent);
 		returnEvent = queue->pop();
-	} while (returnEvent != nullptr);
+	} while (returnEvent != nullptr);*/
 }

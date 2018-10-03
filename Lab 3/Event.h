@@ -3,14 +3,15 @@
 
 enum EventType
 {
-	DEFAULT = -1,
+	DEFAULT_EVENT = -1,
 	PLAYER_MOVE
 };
 
 class Event
 {
 public:
-	Event();
+	//Event();
+	Event(EventType _type);
 	~Event();
 
 	std::string TestString;
