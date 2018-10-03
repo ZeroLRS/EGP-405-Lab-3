@@ -2,10 +2,11 @@
 
 #include <vector>
 #include "Entity.h"
+#include "EventListener.h"
 
 class InputManager;
 
-class GameState
+class GameState : public EventListener
 {
 public:
 	GameState();
@@ -17,5 +18,8 @@ public:
 	void Update();
 	void DrawMap();
 	void HandleInput();
+
+	void handleEvent(const Event& _event) override;
+	void initEvents();
 };
 

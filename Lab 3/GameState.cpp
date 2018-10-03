@@ -18,8 +18,16 @@ GameState::~GameState()
 	}
 }
 
+void GameState::initEvents()
+{
+	//init all events gamestate should listen to
+	EventSystem::getInstance()->addListener(this, PLAYER_MOVE);
+}
+
 void GameState::Update()
 {
+	//dispatch events from queue
+	EventSystem::getInstance()->dispatchEvents();
 }
 
 void GameState::DrawMap()
@@ -85,5 +93,19 @@ void GameState::HandleInput()
 	if (input->getKeyDown(VK_RETURN))
 	{
 		//ready up if out of game
+	}
+}
+
+void GameState::handleEvent(const Event & _event)
+{
+	switch (_event.type)
+	{
+		case PLAYER_MOVE:
+		{
+
+			break;
+		}
+		default:
+			return;
 	}
 }
