@@ -23,5 +23,4 @@ private:
 	EventQueueItem* mFirstItem;
 	EventQueueItem* mNewestItem;
 	int mSize;
-
 };
