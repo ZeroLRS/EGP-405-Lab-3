@@ -21,5 +21,6 @@ public:
 
 	void handleEvent(const Event& _event) override;
 	void initEvents();
+	void movePlayer(Vector2 _direction);
 };
 

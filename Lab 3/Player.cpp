@@ -1,8 +1,7 @@
 #include "Player.h"
 
-
-
-Player::Player(std::string _userName, Vector2 _startPos, bool _isClient):Entity(_startPos, (_isClient ? '@' : 'O')), userName(_userName)
+Player::Player(std::string _userName, Vector2 _startPos, bool _isClient):Entity(_startPos, (_isClient ? '@' : 'O'), (_isClient ? CLIENT_PLAYER : PLAYER)), 
+userName(_userName)
 {}
 
 
