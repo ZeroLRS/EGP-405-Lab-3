@@ -26,7 +26,7 @@
 #include <thread>
 #include <mutex>
 
-const int FPS = 5;
+const int FPS = 4;
 const __int64 MS_PER_FRAME = 1000 / FPS;
 
 // Test mutex
@@ -43,7 +43,7 @@ void addStuffToQueue(EventQueue* queue)
 			testEvent->TestString = "Hello World";
 			queue->push(testEvent);
 		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		std::this_thread::sleep_for(std::chrono::milliseconds(250));
 	}
 }
 
