@@ -15,6 +15,11 @@ GameState::GameState()
 	input = new InputManager();
 
 	initEvents();
+
+	Vector2 start(0, 0);
+	Player* newPlayer = new Player("theClient", start, true);
+
+	addEntity(newPlayer);
 }
 
 GameState::~GameState()
@@ -100,6 +105,8 @@ void GameState::startGame(std::vector<Player> _players)
 		entities.push_back(&(*iter));
 	}
 
+	spawnCoins();
+
 	inGame = true;
 }
 
@@ -122,11 +129,21 @@ void GameState::spawnCoins()
 		if (!usedSlots[randX][randY])
 		{
 			//TODO: SPAWN COIN HERE
+
+			Vector2 pos(randX, randY);
+			Entity* coin = new Entity(pos, 'C', COIN);
+			addEntity(coin);
+
 			--numToSpawn;
 			
 			usedSlots[randX][randY] = true;
 		}
 	}
+}
+
+void GameState::addEntity(Entity * _entity)
+{
+	entities.push_back(_entity);
 }
 
 //TODO: MOVE THIS TO SERVER
@@ -193,26 +210,19 @@ void GameState::DrawMap()
 {
 	system("cls");
 
+	printf( (getClientPlayer()->getUserName() + " (%i)").c_str(), getClientPlayer()->getNumCoins() );
 
 	// player1name (coincount) vs player2 (1) vs player3 (2) vs...
 	for (int i = 0; i < entities.size(); ++i)
 	{
 		//if current entity is not a player
-		if (entities[i]->getType() != PLAYER && entities[i]->getType() != CLIENT_PLAYER)
+		if (entities[i]->getType() != PLAYER || entities[i]->getType() == CLIENT_PLAYER)
 			continue;
 
-		printf( ( ((Player*)entities[i])->getUserName() + " (%i)" ).c_str(), ((Player*)entities[i])->getNumCoins());
-
-		if (i < entities.size() - 1)
-		{
-			printf(" V.S ");
-		}
-		else
-		{
-			printf("\n");
-		}
-
+		printf(  ( " V.S " + ((Player*)entities[i])->getUserName() + " (%i)" ).c_str(), ((Player*)entities[i])->getNumCoins());
 	}
+
+	printf("\n");
 
 	char map[NUM_MAP_COLUMNS][NUM_MAP_ROWS];
 
@@ -279,6 +289,10 @@ void GameState::HandleInput()
 		if (input->getKeyDown(VK_RETURN))
 		{
 			//ready up if out of game
+
+			//testing
+			std::vector<Player> test;
+			startGame(test);
 		}
 	}
 }

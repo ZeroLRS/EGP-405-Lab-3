@@ -33,6 +33,7 @@ public:
 	void startGame(std::vector<Player> _players);
 	void endGame();
 	void spawnCoins();
+	void addEntity(Entity* _entity);
 
 	void checkForCoinCollisions();
 	Player* getClientPlayer();
