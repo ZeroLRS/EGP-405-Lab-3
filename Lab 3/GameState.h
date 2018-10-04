@@ -32,7 +32,9 @@ public:
 	void onCoinCollection(RakNet::NetworkID _coinID, RakNet::NetworkID _collectorID);
 	void startGame(std::vector<Player> _players);
 	void endGame();
+	void spawnCoins();
 
+	void checkForCoinCollisions();
 	Player* getClientPlayer();
 	Entity* getEntityByID(RakNet::NetworkID _ID);
 };

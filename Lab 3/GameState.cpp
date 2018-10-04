@@ -6,7 +6,9 @@
 #include "GameEndEvent.h"
 #include "CoinCollectedEvent.h"
 #include "GameStartEvent.h"
-
+#include <string>
+#include <random>
+#include <algorithm>
 GameState::GameState()
 {
 	exit = false;
@@ -106,6 +108,55 @@ void GameState::endGame()
 	inGame = false;
 }
 
+//TODO: MOVE THIS TO SERVER
+void GameState::spawnCoins()
+{
+	int numToSpawn = 5;
+	bool usedSlots[NUM_MAP_COLUMNS][NUM_MAP_ROWS]{ { false }, {false} };
+
+	while (numToSpawn > 0)
+	{
+		int randX = std::rand() % NUM_MAP_COLUMNS;
+		int randY = std::rand() % NUM_MAP_ROWS;
+
+		if (!usedSlots[randX][randY])
+		{
+			//TODO: SPAWN COIN HERE
+			--numToSpawn;
+			
+			usedSlots[randX][randY] = true;
+		}
+	}
+}
+
+//TODO: MOVE THIS TO SERVER
+void GameState::checkForCoinCollisions()
+{
+	Player* currentPlayer;
+
+	for (auto playerIter = entities.begin(); playerIter != entities.end(); ++playerIter)
+	{
+		//if playerIter entity is not a player
+		if (!(*playerIter)->getType() != PLAYER && !(*playerIter)->getType() != CLIENT_PLAYER)
+			continue;
+
+		for (auto coinIter = entities.begin(); coinIter != entities.end(); ++coinIter)
+		{
+			//if coinIter entity is a player
+			if ((*coinIter)->getType() == PLAYER || (*coinIter)->getType() == CLIENT_PLAYER)
+				continue;
+
+			Vector2 playerPos = (*playerIter)->getPosition();
+			Vector2 coinPos = (*coinIter)->getPosition();
+
+			if (playerPos.x == coinPos.x && playerPos.y == coinPos.y)
+			{
+				//TODO: SEND COIN COLLECTION PACKET
+			}
+		}
+	}
+}
+
 Player* GameState::getClientPlayer()
 {
 	for (auto iter = entities.begin(); iter != entities.end(); ++iter)
@@ -144,6 +195,27 @@ void GameState::DrawMap()
 {
 	system("cls");
 
+
+	// player1name (coincount) vs player2 (1) vs player3 (2) vs...
+	for (int i = 0; i < entities.size(); ++i)
+	{
+		//if current entity is not a player
+		if (entities[i]->getType() != PLAYER && entities[i]->getType() != CLIENT_PLAYER)
+			continue;
+
+		printf( ( ((Player*)entities[i])->getUserName() + " (%i)" ).c_str(), ((Player*)entities[i])->getNumCoins());
+
+		if (i < entities.size() - 1)
+		{
+			printf(" V.S ");
+		}
+		else
+		{
+			printf("\n");
+		}
+
+	}
+
 	char map[NUM_MAP_COLUMNS][NUM_MAP_ROWS];
 
 	// Fill the map with the empty character
@@ -168,6 +240,8 @@ void GameState::DrawMap()
 		}
 		printf("\n");
 	}
+
+	printf("3 coins to win! \n");
 
 }
 
