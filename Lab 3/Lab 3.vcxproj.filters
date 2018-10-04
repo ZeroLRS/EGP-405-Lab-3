@@ -53,6 +53,15 @@
     </ClCompile>
     <ClCompile Include="Networking.cpp">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClCompile Include="GameEndEvent.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="CoinCollectedEvent.cpp">
+      <Filter>Source Files\Events</Filter>
+    </ClCompile>
+    <ClCompile Include="GameStartEvent.cpp">
+      <Filter>Source Files\Events</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +97,15 @@
     </ClInclude>
     <ClInclude Include="Networking.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CoinCollectedEvent.h">
+      <Filter>Header Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEndEvent.h">
+      <Filter>Header Files\Events</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStartEvent.h">
+      <Filter>Header Files\Events</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

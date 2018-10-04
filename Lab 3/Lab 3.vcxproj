@@ -135,11 +135,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CoinCollectedEvent.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="EventListener.cpp" />
     <ClCompile Include="EventQueue.cpp" />
     <ClCompile Include="EventSystem.cpp" />
+    <ClCompile Include="GameEndEvent.cpp" />
+    <ClCompile Include="GameStartEvent.cpp" />
     <ClCompile Include="GameState.cpp" />
     <ClCompile Include="inputManager.cpp" />
     <ClCompile Include="main.cpp" />
@@ -148,11 +151,14 @@
     <ClCompile Include="PlayerMoveEvent.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CoinCollectedEvent.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="EventListener.h" />
     <ClInclude Include="EventQueue.h" />
     <ClInclude Include="EventSystem.h" />
+    <ClInclude Include="GameEndEvent.h" />
+    <ClInclude Include="GameStartEvent.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Networking.h" />
