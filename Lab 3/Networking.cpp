@@ -1,4 +1,3 @@
-
 #include "Networking.h"
 
 Networking::Networking()
@@ -7,7 +6,10 @@ Networking::Networking()
 
 Networking::~Networking()
 {
-	deinit();
+	if (peer != nullptr)
+	{
+		RakNet::RakPeerInterface::DestroyInstance(peer);
+	}
 }
 
 void Networking::init()
@@ -44,7 +46,7 @@ void Networking::init()
 
 		if (str[0] == '\n')
 		{
-			strcpy(str, "127.0.0.1");
+			strcpy_s(str, "127.0.0.1");
 		}
 
 		printf("Starting the client.\n");
@@ -66,11 +68,6 @@ void Networking::init()
 		username = "server";
 	}
 
-}
-
-void Networking::deinit()
-{
-	RakNet::RakPeerInterface::DestroyInstance(peer);
 }
 
 void Networking::HandlePackets(GameState* gs)
@@ -98,7 +95,7 @@ void Networking::HandlePackets(GameState* gs)
 
 				// Once the user has connected to the server, have them request a username
 				GameMessageFromUser msg[1] = { ID_GAME_MESSAGE_USERNAME_REQUEST };
-				strcpy(msg->playerName, username.c_str());
+				strcpy_s(msg->playerName, username.c_str());
 
 				peer->Send((char *)msg, sizeof(GameMessageFromUser), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->guid, false);
 
@@ -177,4 +174,4 @@ void Networking::HandlePackets(GameState* gs)
 	}
 }
 
-Networking* Networking::instance;
+Networking* Networking::instance = 0;

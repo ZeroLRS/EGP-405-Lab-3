@@ -9,6 +9,7 @@
 
 #include <string>
 #include <vector>
+#include <mutex>
 
 enum GameMessages
 {
@@ -73,12 +74,18 @@ public:
 	~Networking();
 	void HandlePackets(GameState* gs);
 	void init();
-	void deinit();
 
 	std::vector<userID> users;
 	bool isServer;
 	std::string username;
 	
-	static Networking* getInstance() { return instance; }
+	static Networking* getInstance()
+	{
+		if (!instance)
+		{
+			instance = new Networking();
+		}
+		return instance;
+	}
 
 };

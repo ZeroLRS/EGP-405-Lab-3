@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Event.h"
+#include <mutex>
 
 struct EventQueueItem
 {
@@ -18,6 +19,8 @@ public:
 	Event* pop();
 
 	int getSize();
+
+	std::mutex queueMutex;
 
 private:
 	EventQueueItem* mFirstItem;
