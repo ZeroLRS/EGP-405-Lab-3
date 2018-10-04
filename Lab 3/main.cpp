@@ -23,8 +23,17 @@
 #include "GameState.h"
 #include "Networking.h"
 
+#include <thread>
+#include <chrono>
+
 const int FPS = 4;
 const __int64 MS_PER_FRAME = 1000 / FPS;
+
+void callHandlePackets(GameState* gs)
+{
+	while (!gs->exit)
+		Networking::getInstance()->HandlePackets(gs);
+}
 
 int main(int const argc, char const *const *const argv)
 {
@@ -32,7 +41,31 @@ int main(int const argc, char const *const *const argv)
 	Networking* network = Networking::getInstance();
 	network->init();
 
-	
+	std::thread networkThread(callHandlePackets, gs);
+
+	auto lastTime = std::chrono::system_clock::now();
+	auto lastTimeMS = std::chrono::time_point_cast<std::chrono::milliseconds>(lastTime);
+
+	while (!gs->exit)
+	{
+
+		auto currentTime = std::chrono::system_clock::now();
+		auto currentTimeMS = std::chrono::time_point_cast<std::chrono::milliseconds>(currentTime);
+
+		auto elapsedChronoTime = currentTimeMS - lastTimeMS;
+
+		__int64 elapsedTime = elapsedChronoTime.count();
+
+		if (elapsedTime > MS_PER_FRAME)
+		{
+			gs->Update();
+			gs->DrawMap();
+
+			lastTimeMS = currentTimeMS;
+		}
+	}
+
+	networkThread.join();
 
 	// exit
 	printf("\n\n");
