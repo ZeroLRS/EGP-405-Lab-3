@@ -4,7 +4,10 @@
 enum EventType
 {
 	DEFAULT_EVENT = -1,
-	PLAYER_MOVE
+	GAME_START,
+	PLAYER_MOVE,
+	COIN_COLLECTED,
+	GAME_END
 };
 
 class Event

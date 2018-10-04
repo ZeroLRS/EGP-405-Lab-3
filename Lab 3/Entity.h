@@ -11,7 +11,7 @@ enum EntityType
 	COIN
 };
 
-class Entity : RakNet::NetworkIDObject
+class Entity : public RakNet::NetworkIDObject
 {
 public:
 	Entity(Vector2 _startPos, char _symbol, EntityType _type);
