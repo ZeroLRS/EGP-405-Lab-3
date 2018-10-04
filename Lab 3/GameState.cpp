@@ -132,8 +132,6 @@ void GameState::spawnCoins()
 //TODO: MOVE THIS TO SERVER
 void GameState::checkForCoinCollisions()
 {
-	Player* currentPlayer;
-
 	for (auto playerIter = entities.begin(); playerIter != entities.end(); ++playerIter)
 	{
 		//if playerIter entity is not a player
