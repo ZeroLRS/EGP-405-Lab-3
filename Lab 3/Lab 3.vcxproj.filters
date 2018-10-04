@@ -53,7 +53,7 @@
     </ClCompile>
     <ClCompile Include="Networking.cpp">
       <Filter>Source Files</Filter>
-    </ClInclude>
+    </ClCompile>
     <ClCompile Include="GameEndEvent.cpp">
       <Filter>Source Files\Events</Filter>
     </ClCompile>
