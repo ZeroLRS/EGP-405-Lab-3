@@ -1,7 +1,11 @@
 #include "Networking.h"
+#include "EventSystem.h"
+#include "PlayerMoveEvent.h"
 
 Networking::Networking()
 {
+	player1.username = "\n";
+	player2.username = "\n";
 }
 
 Networking::~Networking()
@@ -70,6 +74,15 @@ void Networking::init()
 
 }
 
+void Networking::sendEventToServer(Event* event)
+{
+	GameMessageFromUser msg[1];
+	msg->typeID = ID_GAME_MESSAGE_EVENT;
+	strcpy(msg->playerName, username.c_str());
+	memcpy(msg->message, &event, sizeof(&event));
+	peer->Send((char *)msg, sizeof(GameMessageFromUser), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->guid, false);
+}
+
 void Networking::HandlePackets(GameState* gs)
 {
 	for (
@@ -106,18 +119,26 @@ void Networking::HandlePackets(GameState* gs)
 
 			GameMessageFromUser* usernameReq = (GameMessageFromUser*)packet->data;
 
-			for (userID currID : users) {
-				if (strcmp(usernameReq->playerName, currID.username.c_str()) == 0 || strcmp(usernameReq->playerName, username.c_str())) {
-					peer->CloseConnection(packet->systemAddress, true);
-					break;
-				}
+			if (strcmp(usernameReq->playerName, player1.username.c_str())
+				|| strcmp(usernameReq->playerName, player2.username.c_str())
+					|| strcmp(usernameReq->playerName, username.c_str()))
+			{
+				peer->CloseConnection(packet->systemAddress, true);
+				break;
 			}
 
 			userID newUser;
 			newUser.username = usernameReq->playerName;
 			newUser.guid = packet->guid;
 
-			users.push_back(newUser);
+			if (strcmp(player1.username.c_str(), "\n"))
+			{
+				player1 = newUser;
+			}
+			else
+			{
+				player2 = newUser;
+			}
 
 			printf("New user added");
 
@@ -166,7 +187,35 @@ void Networking::HandlePackets(GameState* gs)
 			printf("%s", msg->message);
 		}
 		break;
-		
+		case ID_GAME_MESSAGE_EVENT:
+		{
+			// Parse the packet data into our struct
+			GameMessageFromUser* msg = (GameMessageFromUser*) packet->data;
+
+			// If we're the server, send this event to the other player as well
+			if (isServer)
+			{
+				RakNet::RakNetGUID otherUser;
+
+				if (packet->guid == player1.guid)
+				{
+					otherUser = player2.guid;
+				}
+				else
+				{
+					otherUser = player1.guid;
+				}
+
+				peer->Send((char*)msg, sizeof(GameMessageData), HIGH_PRIORITY, RELIABLE, 0, otherUser, false);
+
+			}
+
+			// If we're either, get the event from the message and then add it to the event queue
+			PlayerMoveEvent* event = (PlayerMoveEvent*)msg->message;
+			EventSystem::getInstance()->addToEventQueue(event);
+			
+		}
+		break;
 		default:
 			printf("Message with identifier %i has arrived.\n", packet->data[0]);
 			break;
