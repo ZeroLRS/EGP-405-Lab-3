@@ -1,18 +1,12 @@
 #include "Player.h"
 #include "GameState.h"
 
-Player::Player(std::string _userName, Vector2 _startPos, bool _isClient):Entity(_startPos, (_isClient ? '@' : 'O'), (_isClient ? CLIENT_PLAYER : PLAYER)), 
-userName(_userName)
+Player::Player( Vector2 _startPos, bool _isClient):Entity(_startPos, (_isClient ? '@' : 'O'), (_isClient ? CLIENT_PLAYER : PLAYER))
 {}
 
 
 Player::~Player()
 {}
-
-std::string Player::getUserName()
-{
-	return userName;
-}
 
 void Player::addCoin() 
 { 

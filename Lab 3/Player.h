@@ -12,8 +12,6 @@ public:
 	Player( Vector2 _startPos, bool _isClient);
 	~Player();
 
-	std::string getUserName();
-
 	void addCoin();
 	int getNumCoins();
 	void move(Vector2 _direction);
