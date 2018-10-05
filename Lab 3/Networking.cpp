@@ -89,8 +89,8 @@ void Networking::init()
 
 }
 
-
-
+// Create player entites for both connected players, and send them to each
+//	Because we're using RakNet NetworkID's these will be easily identifiable across both clients
 void Networking::gameStartup(GameState *gs)
 {
 	Player* p1 = gs->createPlayerForPacket();
@@ -124,6 +124,8 @@ void Networking::gameStartup(GameState *gs)
 	EventSystem::getInstance()->addToEventQueue(p2e1, true);
 }
 
+// Create coin entites for both connected players, and send them to each
+//	Because we're using RakNet NetworkID's these will be easily identifiable across both clients
 void Networking::sendNewCoins(GameState * gs)
 {
 	for (int i = 0; i <= 5; i++)
@@ -144,6 +146,7 @@ void Networking::sendNewCoins(GameState * gs)
 	}
 }
 
+// Main loop for handling every packet we're sent
 void Networking::HandlePackets(GameState* gs)
 {
 	for (
