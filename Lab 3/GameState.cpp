@@ -16,10 +16,10 @@ GameState::GameState()
 
 	initEvents();
 
-	Vector2 start(0, 0);
-	Player* newPlayer = new Player("theClient", start, true);
+	//Vector2 start(0, 0);
+	//Player* newPlayer = new Player(start, true);
 
-	addEntity(newPlayer);
+	//addEntity(newPlayer);
 }
 
 GameState::~GameState()
@@ -34,7 +34,12 @@ GameState::~GameState()
 void GameState::initEvents()
 {
 	//init all events gamestate should listen to
+	EventSystem::getInstance()->addListener(this, GAME_START);
 	EventSystem::getInstance()->addListener(this, PLAYER_MOVE);
+	EventSystem::getInstance()->addListener(this, COIN_COLLECTED);
+	EventSystem::getInstance()->addListener(this, CREATE_PLAYER);
+	EventSystem::getInstance()->addListener(this, GAME_END);
+
 }
 
 void GameState::movePlayer(Vector2 _direction, RakNet::NetworkID _playerID)
@@ -93,19 +98,19 @@ void GameState::onCoinCollection(RakNet::NetworkID _coinID, RakNet::NetworkID _c
 }
 
 //initialize the array of entities w/ the new players
-void GameState::startGame(std::vector<Player> _players)
+void GameState::startGame(std::vector<Entity> coins)//, Vector2 _otherPlayerPos)
 {
-	RakNet::NetworkID playerID = getClientPlayer()->GetNetworkID();
-
-	for (auto iter = _players.begin(); iter != _players.end(); ++iter)
+	for (auto iter = coins.begin(); iter != coins.end(); ++iter)
 	{
-		if ((*iter).GetNetworkID() == playerID)
-			continue;
+		Entity* coin = new Entity((*iter).getPosition(), 'C', COIN);
 
-		entities.push_back(&(*iter));
+		coin->SetNetworkID((*iter).GetNetworkID());
+		
+		addEntity(coin);
 	}
 
-	spawnCoins();
+	//Player* opponent = new Player()
+
 
 	inGame = true;
 }
@@ -116,9 +121,9 @@ void GameState::endGame()
 }
 
 //TODO: MOVE THIS TO SERVER
-void GameState::spawnCoins()
+void GameState::spawnCoins(int _numSpawns)
 {
-	int numToSpawn = 5;
+	int numToSpawn = _numSpawns;
 	bool usedSlots[NUM_MAP_COLUMNS][NUM_MAP_ROWS]{ { false }, {false} };
 
 	while (numToSpawn > 0)
@@ -132,6 +137,10 @@ void GameState::spawnCoins()
 
 			Vector2 pos(randX, randY);
 			Entity* coin = new Entity(pos, 'C', COIN);
+			
+			coin->SetNetworkIDManager(&idManager);
+			coin->GetNetworkID();
+
 			addEntity(coin);
 
 			--numToSpawn;
@@ -144,6 +153,46 @@ void GameState::spawnCoins()
 void GameState::addEntity(Entity * _entity)
 {
 	entities.push_back(_entity);
+}
+
+void GameState::deleteAllCoins()
+{
+	std::vector<std::vector<Entity*>::iterator> coins;
+
+	for (auto coinIter = entities.begin(); coinIter != entities.end(); ++coinIter)
+	{
+		//if coinIter entity is a player
+		if ((*coinIter)->getType() == PLAYER || (*coinIter)->getType() == CLIENT_PLAYER)
+			continue;
+
+		coins.push_back(coinIter);
+	}
+
+	for (int i = 0; i < coins.size(); ++i)
+	{
+		entities.erase(coins[i]);
+	}
+}
+
+void GameState::createPlayerFromPacket(Player _playerData, bool _isClient)
+{
+	Player* newPlayer = new Player(_playerData.getPosition(), _isClient);
+
+	newPlayer->SetNetworkID(_playerData.GetNetworkID());
+
+	addEntity(newPlayer);
+}
+
+Player GameState::createPlayerForPacket()
+{
+	int randX = std::rand() % NUM_MAP_COLUMNS;
+	int randY = std::rand() % NUM_MAP_ROWS;
+	Vector2 randPos(randX, randY);
+	
+	Player newPlayer(randPos, false);
+
+	newPlayer.SetNetworkIDManager(&idManager);
+	newPlayer.GetNetworkID();
 }
 
 //TODO: MOVE THIS TO SERVER
@@ -291,8 +340,8 @@ void GameState::HandleInput()
 			//ready up if out of game
 
 			//testing
-			std::vector<Player> test;
-			startGame(test);
+			//std::vector<Player> test;
+			//startGame(test);
 		}
 	}
 }
@@ -305,7 +354,7 @@ void GameState::handleEvent(const Event & _event)
 	{
 		const GameStartEvent gameStart = (const GameStartEvent &)_event;
 		
-		startGame(gameStart.playersInMatch);
+		startGame(gameStart.coins);
 		break;
 	}
 	case GAME_END:
@@ -325,6 +374,12 @@ void GameState::handleEvent(const Event & _event)
 		const PlayerMoveEvent moveEvent = ((const PlayerMoveEvent &)_event);
 
 		movePlayer(moveEvent.moveDirection, moveEvent.playerID);
+
+		if (moveEvent.playerID == getClientPlayer()->GetNetworkID())
+		{
+			//TODO:
+			//send playermoved packet
+		}
 		break;
 	}
 	default:
