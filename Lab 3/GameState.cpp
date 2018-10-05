@@ -9,6 +9,8 @@
 #include <string>
 #include <random>
 #include <algorithm>
+#include "PlaceCoinEvent.h"
+
 GameState::GameState()
 {
 	exit = false;
@@ -193,6 +195,13 @@ Player GameState::createPlayerForPacket()
 
 	newPlayer.SetNetworkIDManager(&idManager);
 	newPlayer.GetNetworkID();
+
+	return newPlayer;
+}
+
+void GameState::placeCoin(Entity coin)
+{
+	addEntity(&coin);
 }
 
 //TODO: MOVE THIS TO SERVER
@@ -259,19 +268,19 @@ void GameState::DrawMap()
 {
 	system("cls");
 
-	printf( (getClientPlayer()->getUserName() + " (%i)").c_str(), getClientPlayer()->getNumCoins() );
+	//printf( (getClientPlayer()->getUserName() + " (%i)").c_str(), getClientPlayer()->getNumCoins() );
 
-	// player1name (coincount) vs player2 (1) vs player3 (2) vs...
-	for (int i = 0; i < entities.size(); ++i)
-	{
-		//if current entity is not a player
-		if (entities[i]->getType() != PLAYER || entities[i]->getType() == CLIENT_PLAYER)
-			continue;
+	//// player1name (coincount) vs player2 (1) vs player3 (2) vs...
+	//for (int i = 0; i < entities.size(); ++i)
+	//{
+	//	//if current entity is not a player
+	//	if (entities[i]->getType() != PLAYER || entities[i]->getType() == CLIENT_PLAYER)
+	//		continue;
 
-		printf(  ( " V.S " + ((Player*)entities[i])->getUserName() + " (%i)" ).c_str(), ((Player*)entities[i])->getNumCoins());
-	}
+	//	printf(  ( " V.S " + ((Player*)entities[i])->getUserName() + " (%i)" ).c_str(), ((Player*)entities[i])->getNumCoins());
+	//}
 
-	printf("\n");
+	//printf("\n");
 
 	char map[NUM_MAP_COLUMNS][NUM_MAP_ROWS];
 
@@ -380,6 +389,19 @@ void GameState::handleEvent(const Event & _event)
 			//TODO:
 			//send playermoved packet
 		}
+		break;
+	}
+	case PLACE_COIN:
+	{
+		const PlaceCoinEvent coinEvent = ((const PlaceCoinEvent &)_event);
+
+		placeCoin(coinEvent.coinData);
+
+		break;
+	}
+	case DELETE_ALL_COINS:
+	{
+		deleteAllCoins();
 		break;
 	}
 	default:

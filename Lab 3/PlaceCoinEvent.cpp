@@ -2,7 +2,7 @@
 
 
 
-PlaceCoinEvent::PlaceCoinEvent(Vector2 _coinPos) : Event(PLACE_COIN), coinPos(_coinPos)
+PlaceCoinEvent::PlaceCoinEvent(Entity _coinData) : Event(PLACE_COIN), coinData(_coinData)
 {
 }
 

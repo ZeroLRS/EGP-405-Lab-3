@@ -1,14 +1,14 @@
 #pragma once
 #include "Event.h"
-#include "Utils.h"
+#include "Entity.h"
 
 class PlaceCoinEvent :
 	public Event
 {
 public:
-	PlaceCoinEvent(Vector2 _coinPos);
+	PlaceCoinEvent(Entity _coinData);
 	~PlaceCoinEvent();
 
-	Vector2 coinPos;
+	Entity coinData;
 };
 

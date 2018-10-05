@@ -2,7 +2,7 @@
 
 
 
-DeleteAllCoinsEvent::DeleteAllCoinsEvent()
+DeleteAllCoinsEvent::DeleteAllCoinsEvent() : Event(DELETE_ALL_COINS)
 {
 }
 

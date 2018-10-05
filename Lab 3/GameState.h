@@ -42,6 +42,9 @@ public:
 	void createPlayerFromPacket(Player _playerData, bool _isClient);
 	Player createPlayerForPacket();
 
+	void placeCoin(Entity coin);
+
+
 	void checkForCoinCollisions();
 	Player* getClientPlayer();
 	Entity* getEntityByID(RakNet::NetworkID _ID);

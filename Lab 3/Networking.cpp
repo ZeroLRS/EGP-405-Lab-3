@@ -80,9 +80,11 @@ void Networking::sendEventToServer(T* event)
 {
 	GameMessageFromUser msg[1];
 	msg->typeID = ID_GAME_MESSAGE_EVENT;
-	strcpy(msg->playerName, username.c_str());
+	
+	strcpy_s(msg->playerName, username.c_str());
 	msg->messageSize = sizeof(T);
 	memcpy(msg->message, &event, sizeof(T));
+	
 	peer->Send((char *)msg, sizeof(GameMessageFromUser), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->guid, false);
 }
 
