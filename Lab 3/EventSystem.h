@@ -17,7 +17,7 @@ public:
 	void removeListenerFromEvent(EventListener* _pListener, EventType _type);
 	void removeListenerFromAllEvents(EventListener* _pListener);
 
-	void addToEventQueue(Event* _event);
+	void addToEventQueue(Event* _event, bool isServer = false);
 	void dispatchEvents();
 
 private:

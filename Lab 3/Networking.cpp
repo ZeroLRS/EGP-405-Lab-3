@@ -1,6 +1,7 @@
 #include "Networking.h"
 #include "EventSystem.h"
 #include "PlayerMoveEvent.h"
+#include "CreatePlayerEvent.h"
 
 Networking::Networking()
 {
@@ -74,13 +75,45 @@ void Networking::init()
 
 }
 
-void Networking::sendEventToServer(Event* event)
+template<class T>
+void Networking::sendEventToServer(T* event)
 {
 	GameMessageFromUser msg[1];
 	msg->typeID = ID_GAME_MESSAGE_EVENT;
 	strcpy(msg->playerName, username.c_str());
-	memcpy(msg->message, &event, sizeof(&event));
+	msg->messageSize = sizeof(T);
+	memcpy(msg->message, &event, sizeof(T));
 	peer->Send((char *)msg, sizeof(GameMessageFromUser), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->guid, false);
+}
+
+void Networking::gameStartup(GameState *gs)
+{
+	Player p1 = gs->createPlayerForPacket();
+	Player p2 = gs->createPlayerForPacket();
+
+	CreatePlayerEvent* p1e1 = new CreatePlayerEvent(p1, true);
+	CreatePlayerEvent* p1e2 = new CreatePlayerEvent(p2, false);
+	CreatePlayerEvent* p2e1 = new CreatePlayerEvent(p2, true);
+	CreatePlayerEvent* p2e2 = new CreatePlayerEvent(p1, false);
+
+	GameMessageFromUser msg[1];
+	msg->typeID = ID_GAME_MESSAGE_EVENT;
+	strcpy(msg->playerName, username.c_str());
+	msg->messageSize = sizeof(CreatePlayerEvent);
+
+	// Player1's character for Player1
+	memcpy(msg->message, p1e1, sizeof(CreatePlayerEvent));
+	peer->Send((char *)msg, sizeof(GameMessageFromUser), HIGH_PRIORITY, RELIABLE_ORDERED, 0, player1.guid, false);
+	// Player2's character for Player1
+	memcpy(msg->message, p1e2, sizeof(CreatePlayerEvent));
+	peer->Send((char *)msg, sizeof(GameMessageFromUser), HIGH_PRIORITY, RELIABLE_ORDERED, 0, player1.guid, false);
+
+	// Player2's character for Player2
+	memcpy(msg->message, p2e1, sizeof(CreatePlayerEvent));
+	peer->Send((char *)msg, sizeof(GameMessageFromUser), HIGH_PRIORITY, RELIABLE_ORDERED, 0, player1.guid, false);
+	// Player2's character for Player1
+	memcpy(msg->message, p2e2, sizeof(CreatePlayerEvent));
+	peer->Send((char *)msg, sizeof(GameMessageFromUser), HIGH_PRIORITY, RELIABLE_ORDERED, 0, player1.guid, false);
 }
 
 void Networking::HandlePackets(GameState* gs)
@@ -116,7 +149,6 @@ void Networking::HandlePackets(GameState* gs)
 			break;
 		case ID_GAME_MESSAGE_USERNAME_REQUEST:
 		{
-
 			GameMessageFromUser* usernameReq = (GameMessageFromUser*)packet->data;
 
 			if (strcmp(usernameReq->playerName, player1.username.c_str())
@@ -211,8 +243,9 @@ void Networking::HandlePackets(GameState* gs)
 			}
 
 			// If we're either, get the event from the message and then add it to the event queue
-			PlayerMoveEvent* event = (PlayerMoveEvent*)msg->message;
-			EventSystem::getInstance()->addToEventQueue(event);
+			Event* event = (Event*) malloc(msg->messageSize);
+			memcpy(&event, msg->message, msg->messageSize);
+			EventSystem::getInstance()->addToEventQueue(event, true);
 			
 		}
 		break;

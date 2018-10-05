@@ -2,6 +2,7 @@
 #include "EventListener.h"
 #include "Event.h"
 #include "EventQueue.h"
+#include "Networking.h"
 
 typedef std::pair<EventType, EventListener*> mapPair;
 
@@ -76,8 +77,12 @@ void EventSystem::removeListenerFromAllEvents(EventListener* _pListener)
 	}
 }
 
-void EventSystem::addToEventQueue(Event* _event)
+void EventSystem::addToEventQueue(Event* _event, bool isServer)
 {
+	if (!isServer)
+	{
+		Networking::getInstance()->sendEventToServer(_event);
+	}
 	eventQueue->push(_event);
 }
 

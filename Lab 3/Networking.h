@@ -42,6 +42,7 @@ struct GameMessageFromUser
 
 	char playerName[16];
 	char message[238];
+	int messageSize;
 
 };
 #pragma pack (pop)
@@ -91,6 +92,10 @@ public:
 		return instance;
 	}
 
-	void sendEventToServer(Event* event);
+	template<class T>
+	void sendEventToServer(T* event);
+
+	void gameStartup(GameState* gs);
+	//void sendNewCoins(GameState* gs);
 
 };
