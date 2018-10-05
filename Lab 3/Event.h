@@ -7,7 +7,8 @@ enum EventType
 	GAME_START,
 	PLAYER_MOVE,
 	COIN_COLLECTED,
-	GAME_END
+	GAME_END,
+	CREATE_PLAYER
 };
 
 class Event

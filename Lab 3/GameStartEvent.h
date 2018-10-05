@@ -6,9 +6,9 @@
 class GameStartEvent : public Event
 {
 public:
-	GameStartEvent(std::vector<Player> _players);
+	GameStartEvent(std::vector<Entity> _coins);
 	~GameStartEvent();
 
-	std::vector<Player> playersInMatch;
+	std::vector<Entity> coins;
 };
 

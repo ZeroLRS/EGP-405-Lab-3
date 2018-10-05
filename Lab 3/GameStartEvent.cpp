@@ -1,8 +1,8 @@
 #include "GameStartEvent.h"
 
-GameStartEvent::GameStartEvent(std::vector<Player> _players) : Event(GAME_START)
+GameStartEvent::GameStartEvent(std::vector<Entity> _coins) : Event(GAME_START)
 {
-	playersInMatch = _players;
+	coins = _coins;
 }
 
 
