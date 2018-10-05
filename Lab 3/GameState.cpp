@@ -10,6 +10,7 @@
 #include <random>
 #include <algorithm>
 #include "PlaceCoinEvent.h"
+#include "CreatePlayerEvent.h"
 
 GameState::GameState()
 {
@@ -176,39 +177,46 @@ void GameState::deleteAllCoins()
 	}
 }
 
-void GameState::createPlayerFromPacket(Player _playerData, bool _isClient)
+void GameState::createPlayerFromPacket(Player& _playerData, bool _isClient)
 {
-	Player* newPlayer = new Player(_playerData.getPosition(), _isClient);
+	if (_isClient)
+	{
+		_playerData.setSymbol('@');
+		_playerData.setType(CLIENT_PLAYER);
+	}
+	else
+	{
+		_playerData.setSymbol('O');
+		_playerData.setType(PLAYER);
+	}
 
-	newPlayer->SetNetworkID(_playerData.GetNetworkID());
-
-	addEntity(newPlayer);
+	addEntity(&_playerData);
 }
 
-Player GameState::createPlayerForPacket()
+Player* GameState::createPlayerForPacket()
 {
 	int randX = std::rand() % NUM_MAP_COLUMNS;
 	int randY = std::rand() % NUM_MAP_ROWS;
 	Vector2 randPos(randX, randY);
 	
-	Player newPlayer(randPos, false);
+	Player* newPlayer = new Player(randPos, false);
 
-	newPlayer.SetNetworkIDManager(&idManager);
-	newPlayer.GetNetworkID();
+	newPlayer->SetNetworkIDManager(&idManager);
+	newPlayer->GetNetworkID();
 
 	return newPlayer;
 }
 
-Entity GameState::createCoinForPacket()
+Entity* GameState::createCoinForPacket()
 {
 	int randX = std::rand() % NUM_MAP_COLUMNS;
 	int randY = std::rand() % NUM_MAP_ROWS;
 	Vector2 randPos(randX, randY);
 
-	Entity newCoin(randPos, 'C', COIN);
+	Entity* newCoin = new Entity(randPos, 'C', COIN);
 
-	newCoin.SetNetworkIDManager(&idManager);
-	newCoin.GetNetworkID();
+	newCoin->SetNetworkIDManager(&idManager);
+	newCoin->GetNetworkID();
 
 	return newCoin;
 }
@@ -413,6 +421,13 @@ void GameState::handleEvent(const Event & _event)
 
 		break;
 	}
+	case CREATE_PLAYER:
+	{
+		CreatePlayerEvent playerEvent = ((const CreatePlayerEvent &)_event);
+
+		createPlayerFromPacket(playerEvent.playerData, playerEvent.isClient);
+	}
+	break;
 	case DELETE_ALL_COINS:
 	{
 		deleteAllCoins();

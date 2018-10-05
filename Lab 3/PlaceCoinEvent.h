@@ -6,7 +6,7 @@ class PlaceCoinEvent :
 	public Event
 {
 public:
-	PlaceCoinEvent(Entity _coinData);
+	PlaceCoinEvent(Entity* _coinData);
 	~PlaceCoinEvent();
 
 	Entity coinData;

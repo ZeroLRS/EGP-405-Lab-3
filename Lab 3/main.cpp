@@ -47,7 +47,13 @@ int main(int const argc, char const *const *const argv)
 	{
 		system("cls");
 		printf("Waiting for users to connect...");
-		while (network->player1.username == "\n" && network->player2.username == "\n")	{}
+		while (network->player1.username == "\n" || network->player2.username == "\n")
+		{
+		}
+
+		network->gameStartup(gs);
+		network->sendNewCoins(gs);
+
 	}
 
 	auto lastTime = std::chrono::system_clock::now();

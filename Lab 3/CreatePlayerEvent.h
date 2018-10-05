@@ -6,7 +6,7 @@ class CreatePlayerEvent :
 	public Event
 {
 public:
-	CreatePlayerEvent(Player _playerData, bool _isClient);
+	CreatePlayerEvent(Player* _playerData, bool _isClient);
 	~CreatePlayerEvent();
 
 	Player playerData;

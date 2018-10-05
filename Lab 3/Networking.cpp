@@ -29,7 +29,6 @@ void Networking::init()
 	peer = RakNet::RakPeerInterface::GetInstance();
 
 	// global peer settings for this app
-	int isServer = 0;
 	unsigned short serverPort = 60000;
 
 	// ask user for peer type
@@ -55,6 +54,7 @@ void Networking::init()
 			strcpy_s(str, "127.0.0.1");
 		}
 
+		isServer = false;
 		printf("Starting the client.\n");
 		peer->Connect(str, serverPort, 0, 0);
 	}
@@ -70,7 +70,7 @@ void Networking::init()
 		// We need to let the server accept incoming connections from the clients
 		printf("Starting the server.\n");
 		peer->SetMaximumIncomingConnections(maxClients);
-		isServer = 1;
+		isServer = true;
 		username = "server";
 	}
 
@@ -80,8 +80,8 @@ void Networking::init()
 
 void Networking::gameStartup(GameState *gs)
 {
-	Player p1 = gs->createPlayerForPacket();
-	Player p2 = gs->createPlayerForPacket();
+	Player* p1 = gs->createPlayerForPacket();
+	Player* p2 = gs->createPlayerForPacket();
 
 	CreatePlayerEvent* p1e1 = new CreatePlayerEvent(p1, true);
 	CreatePlayerEvent* p1e2 = new CreatePlayerEvent(p2, false);
@@ -115,7 +115,7 @@ void Networking::sendNewCoins(GameState * gs)
 {
 	for (int i = 0; i <= 5; i++)
 	{
-		Entity coin = gs->createCoinForPacket();
+		Entity* coin = gs->createCoinForPacket();
 		PlaceCoinEvent* e = new PlaceCoinEvent(coin);
 
 		GameMessageFromUser msg[1];
@@ -166,19 +166,22 @@ void Networking::HandlePackets(GameState* gs)
 		{
 			GameMessageFromUser* usernameReq = (GameMessageFromUser*)packet->data;
 
-			if (strcmp(usernameReq->playerName, player1.username.c_str())
-				|| strcmp(usernameReq->playerName, player2.username.c_str())
-					|| strcmp(usernameReq->playerName, username.c_str()))
+			std::string reqName = usernameReq->playerName;
+			reqName.pop_back();
+
+			if (reqName == player1.username
+				|| reqName == player2.username
+					|| reqName == username)
 			{
 				peer->CloseConnection(packet->systemAddress, true);
 				break;
 			}
 
 			userID newUser;
-			newUser.username = usernameReq->playerName;
+			newUser.username = reqName;
 			newUser.guid = packet->guid;
 
-			if (strcmp(player1.username.c_str(), "\n"))
+			if (player1.username == "\n")
 			{
 				player1 = newUser;
 			}

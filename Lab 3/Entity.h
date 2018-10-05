@@ -14,6 +14,7 @@ enum EntityType
 class Entity : public RakNet::NetworkIDObject
 {
 public:
+	Entity() {};
 	Entity(Vector2 _startPos, char _symbol, EntityType _type);
 	~Entity();
 
