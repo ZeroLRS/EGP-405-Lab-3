@@ -1,3 +1,16 @@
+/* File created by:
+* Lucas Spiker and Cory Smith
+* For:
+* Lab 3 on 10/1/2018
+* EGP-405 by Dan Buckstein
+*
+* “We certify that this work is entirely our own.
+*	The assessor of this project may reproduce
+*	this project and provide copies to other academic staff,
+*	and/or communicate a copy of this project to a plagiarism-checking service,
+*	which may retain a copy of the project on its database.”
+*/
+
 #include "Networking.h"
 #include "EventSystem.h"
 #include "PlayerMoveEvent.h"
@@ -76,8 +89,8 @@ void Networking::init()
 
 }
 
-
-
+// Create player entites for both connected players, and send them to each
+//	Because we're using RakNet NetworkID's these will be easily identifiable across both clients
 void Networking::gameStartup(GameState *gs)
 {
 	Player* p1 = gs->createPlayerForPacket();
@@ -111,6 +124,8 @@ void Networking::gameStartup(GameState *gs)
 	EventSystem::getInstance()->addToEventQueue(p2e1, true);
 }
 
+// Create coin entites for both connected players, and send them to each
+//	Because we're using RakNet NetworkID's these will be easily identifiable across both clients
 void Networking::sendNewCoins(GameState * gs)
 {
 	for (int i = 0; i <= 5; i++)
@@ -131,6 +146,7 @@ void Networking::sendNewCoins(GameState * gs)
 	}
 }
 
+// Main loop for handling every packet we're sent
 void Networking::HandlePackets(GameState* gs)
 {
 	for (
