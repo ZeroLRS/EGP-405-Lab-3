@@ -18,11 +18,6 @@ GameState::GameState()
 	input = new InputManager();
 
 	initEvents();
-
-	//Vector2 start(0, 0);
-	//Player* newPlayer = new Player(start, true);
-
-	//addEntity(newPlayer);
 }
 
 GameState::~GameState()
@@ -34,6 +29,7 @@ GameState::~GameState()
 	}
 }
 
+//Adds game state to all neccessary events
 void GameState::initEvents()
 {
 	//init all events gamestate should listen to
@@ -45,6 +41,7 @@ void GameState::initEvents()
 
 }
 
+//Moves selected player locally in the direction specified
 void GameState::movePlayer(Vector2 _direction, RakNet::NetworkID _playerID)
 {
 	Player* player = (Player*)getEntityByID(_playerID);//->move(_direction);
@@ -57,6 +54,7 @@ void GameState::movePlayer(Vector2 _direction, RakNet::NetworkID _playerID)
 	printf("(%i , %i)", _direction.x, _direction.y);
 }
 
+//When coin is collected by a player
 void GameState::onCoinCollection(RakNet::NetworkID _coinID, RakNet::NetworkID _collectorID)
 {
 	Player* collector = nullptr;
@@ -90,7 +88,6 @@ void GameState::onCoinCollection(RakNet::NetworkID _coinID, RakNet::NetworkID _c
 
 	collector->addCoin();
 
-	//TODO: MOVE THIS TO SERVER
 	if (collector->getNumCoins() >= 3)
 	{
 		//End game if player has 3 coins
@@ -112,9 +109,6 @@ void GameState::startGame(std::vector<Entity> coins)//, Vector2 _otherPlayerPos)
 		addEntity(coin);
 	}
 
-	//Player* opponent = new Player()
-
-
 	inGame = true;
 }
 
@@ -123,21 +117,19 @@ void GameState::endGame()
 	inGame = false;
 }
 
-//TODO: MOVE THIS TO SERVER
 void GameState::spawnCoins(int _numSpawns)
 {
 	int numToSpawn = _numSpawns;
 	bool usedSlots[NUM_MAP_COLUMNS][NUM_MAP_ROWS]{ { false }, {false} };
 
 	while (numToSpawn > 0)
-	{
+	{	
+		//get random (x,y) for coin
 		int randX = std::rand() % NUM_MAP_COLUMNS;
 		int randY = std::rand() % NUM_MAP_ROWS;
 
 		if (!usedSlots[randX][randY])
 		{
-			//TODO: SPAWN COIN HERE
-
 			Vector2 pos(randX, randY);
 			Entity* coin = new Entity(pos, 'C', COIN);
 			
@@ -158,6 +150,7 @@ void GameState::addEntity(Entity * _entity)
 	entities.push_back(_entity);
 }
 
+//Clears game board of coins
 void GameState::deleteAllCoins()
 {
 	std::vector<std::vector<Entity*>::iterator> coins;
@@ -177,6 +170,7 @@ void GameState::deleteAllCoins()
 	}
 }
 
+//Creates a player from the "CreatPlayerEvent" packet sent in
 void GameState::createPlayerFromPacket(Player& _playerData, bool _isClient)
 {
 	if (_isClient)
@@ -193,6 +187,7 @@ void GameState::createPlayerFromPacket(Player& _playerData, bool _isClient)
 	addEntity(&_playerData);
 }
 
+//Creates a player for the "CreatPlayerEvent"
 Player* GameState::createPlayerForPacket()
 {
 	int randX = std::rand() % NUM_MAP_COLUMNS;
@@ -207,6 +202,7 @@ Player* GameState::createPlayerForPacket()
 	return newPlayer;
 }
 
+//same for CreateCoinEvent
 Entity* GameState::createCoinForPacket()
 {
 	int randX = std::rand() % NUM_MAP_COLUMNS;
@@ -226,7 +222,7 @@ void GameState::placeCoin(Entity coin)
 	addEntity(&coin);
 }
 
-//TODO: MOVE THIS TO SERVER
+//Check for player on coin collision
 void GameState::checkForCoinCollisions()
 {
 	for (auto playerIter = entities.begin(); playerIter != entities.end(); ++playerIter)
@@ -246,12 +242,14 @@ void GameState::checkForCoinCollisions()
 
 			if (playerPos.x == coinPos.x && playerPos.y == coinPos.y)
 			{
-				//TODO: SEND COIN COLLECTION PACKET
+				CoinCollectedEvent* coinCollected = new CoinCollectedEvent((*coinIter)->GetNetworkID(), (*playerIter)->GetNetworkID());
+				EventSystem::getInstance()->addToEventQueue(coinCollected, true);
 			}
 		}
 	}
 }
 
+//Get Player object that belongs to the client
 Player* GameState::getClientPlayer()
 {
 	for (auto iter = entities.begin(); iter != entities.end(); ++iter)
