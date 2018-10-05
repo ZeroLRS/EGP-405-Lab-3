@@ -2,6 +2,7 @@
 #include "EventSystem.h"
 #include "PlayerMoveEvent.h"
 #include "CreatePlayerEvent.h"
+#include "PlaceCoinEvent.h"
 
 Networking::Networking()
 {
@@ -75,18 +76,7 @@ void Networking::init()
 
 }
 
-template<class T>
-void Networking::sendEventToServer(T* event)
-{
-	GameMessageFromUser msg[1];
-	msg->typeID = ID_GAME_MESSAGE_EVENT;
-	
-	strcpy_s(msg->playerName, username.c_str());
-	msg->messageSize = sizeof(T);
-	memcpy(msg->message, &event, sizeof(T));
-	
-	peer->Send((char *)msg, sizeof(GameMessageFromUser), HIGH_PRIORITY, RELIABLE_ORDERED, 0, packet->guid, false);
-}
+
 
 void Networking::gameStartup(GameState *gs)
 {
@@ -100,7 +90,7 @@ void Networking::gameStartup(GameState *gs)
 
 	GameMessageFromUser msg[1];
 	msg->typeID = ID_GAME_MESSAGE_EVENT;
-	strcpy(msg->playerName, username.c_str());
+	strcpy_s(msg->playerName, username.c_str());
 	msg->messageSize = sizeof(CreatePlayerEvent);
 
 	// Player1's character for Player1
@@ -116,6 +106,29 @@ void Networking::gameStartup(GameState *gs)
 	// Player2's character for Player1
 	memcpy(msg->message, p2e2, sizeof(CreatePlayerEvent));
 	peer->Send((char *)msg, sizeof(GameMessageFromUser), HIGH_PRIORITY, RELIABLE_ORDERED, 0, player1.guid, false);
+
+	EventSystem::getInstance()->addToEventQueue(p1e1, true);
+	EventSystem::getInstance()->addToEventQueue(p2e1, true);
+}
+
+void Networking::sendNewCoins(GameState * gs)
+{
+	for (int i = 0; i <= 5; i++)
+	{
+		Entity coin = gs->createCoinForPacket();
+		PlaceCoinEvent* e = new PlaceCoinEvent(coin);
+
+		GameMessageFromUser msg[1];
+		msg->typeID = ID_GAME_MESSAGE_EVENT;
+		strcpy_s(msg->playerName, username.c_str());
+		msg->messageSize = sizeof(PlaceCoinEvent);
+
+		memcpy(msg->message, e, sizeof(PlaceCoinEvent));
+
+		peer->Send((char *)msg, sizeof(GameMessageFromUser), HIGH_PRIORITY, RELIABLE_ORDERED, 0, player1.guid, false);
+		peer->Send((char *)msg, sizeof(GameMessageFromUser), HIGH_PRIORITY, RELIABLE_ORDERED, 0, player2.guid, false);
+		EventSystem::getInstance()->addToEventQueue(e, true);
+	}
 }
 
 void Networking::HandlePackets(GameState* gs)

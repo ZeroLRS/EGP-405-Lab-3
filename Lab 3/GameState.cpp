@@ -199,6 +199,20 @@ Player GameState::createPlayerForPacket()
 	return newPlayer;
 }
 
+Entity GameState::createCoinForPacket()
+{
+	int randX = std::rand() % NUM_MAP_COLUMNS;
+	int randY = std::rand() % NUM_MAP_ROWS;
+	Vector2 randPos(randX, randY);
+
+	Entity newCoin(randPos, 'C', COIN);
+
+	newCoin.SetNetworkIDManager(&idManager);
+	newCoin.GetNetworkID();
+
+	return newCoin;
+}
+
 void GameState::placeCoin(Entity coin)
 {
 	addEntity(&coin);

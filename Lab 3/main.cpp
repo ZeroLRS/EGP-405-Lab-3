@@ -43,6 +43,13 @@ int main(int const argc, char const *const *const argv)
 
 	std::thread networkThread(callHandlePackets, gs);
 
+	if (network->isServer)
+	{
+		system("cls");
+		printf("Waiting for users to connect...");
+		while (network->player1.username == "\n" && network->player2.username == "\n")	{}
+	}
+
 	auto lastTime = std::chrono::system_clock::now();
 	auto lastTimeMS = std::chrono::time_point_cast<std::chrono::milliseconds>(lastTime);
 

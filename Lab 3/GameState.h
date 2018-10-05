@@ -41,6 +41,7 @@ public:
 	void deleteAllCoins();
 	void createPlayerFromPacket(Player _playerData, bool _isClient);
 	Player createPlayerForPacket();
+	Entity createCoinForPacket();
 
 	void placeCoin(Entity coin);
 
