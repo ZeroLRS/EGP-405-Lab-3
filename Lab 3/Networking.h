@@ -19,6 +19,7 @@ enum GameMessages
 
 	ID_GAME_MESSAGE_GAMESTATE,
 	ID_GAME_MESSAGE_USERNAME_REQUEST,
+	ID_GAME_MESSAGE_EVENT
 };
 
 #pragma pack(push, 1)
@@ -75,7 +76,9 @@ public:
 	void HandlePackets(GameState* gs);
 	void init();
 
-	std::vector<userID> users;
+	userID player1;
+	userID player2;
+
 	bool isServer;
 	std::string username;
 	
@@ -87,5 +90,7 @@ public:
 		}
 		return instance;
 	}
+
+	void sendEventToServer(Event* event);
 
 };
